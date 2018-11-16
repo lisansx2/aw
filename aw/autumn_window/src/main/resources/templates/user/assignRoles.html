@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+
+<head th:replace="common/base:: head(~{::title},~{::link},~{::script})">
+<!-- Bootstrap DualListBox CSS（左右多选列表框样式）-->
+<link
+	href="../vendor/bootstrap-duallistbox-3.0.6/dist/bootstrap-duallistbox.min.css"
+	rel="stylesheet" type="text/css"
+	th:href="@{/vendor/bootstrap-duallistbox-3.0.6/dist/bootstrap-duallistbox.min.css}" />
+<title>[[#{aw.system.name}]]-用户管理-分配角色</title>
+<!-- Bootstrap DualListBox JS（左右多选列表框JS）-->
+<script
+	src="../vendor/bootstrap-duallistbox-3.0.6/dist/jquery.bootstrap-duallistbox.min.js"
+	th:src="@{/vendor/bootstrap-duallistbox-3.0.6/dist/jquery.bootstrap-duallistbox.min.js}"></script>
+<!-- 	本页使用的JS -->
+<script type="text/javascript" th:inline="javascript">
+
+	$(document).ready(function() {
+
+        $('#userRolesSelect').bootstrapDualListbox({
+            filterTextClear: '显示全部',
+            filterPlaceHolder: '输入过滤内容',
+            moveSelectedLabel: '选择所选项',
+            moveAllLabel: '选择全部项',
+            removeSelectedLabel: '取消所选项',
+            removeAllLabel: '取消全部项',
+            moveOnSelect: false,
+            preserveSelectionOnMove: 'moved',
+            selectedListLabel: '已选择',
+            nonSelectedListLabel: '未选择',
+            infoText: '全部{0}项',
+            infoTextFiltered: '<span class="label label-warning">过滤结果为{0}项</span>,共{1}项',
+            infoTextEmpty: '列表为空'
+        });
+        
+	});
+</script>
+</head>
+
+<body>
+	<div id="wrapper">
+		<!-- Navigation -->
+		<div th:include="common/headerAndMenu :: headerAndMenu"></div>
+
+		<!-- Page Content -->
+		<div id="page-wrapper">
+			<div class="container-fluid">
+				<!--路径导航-->
+				<div class="row">
+					<div class="col-md-12">
+						<h3 class="page-header">
+                            用户管理-分配角色
+                        </h3>
+						<ol class="breadcrumb">
+							<li><i class="fa fa-home fa-fw"></i>  <a href="index.html" th:href="@{/}">首页</a></li>
+							<li><i class="fa fa-users fa-fw"></i> <a href="userManage.html" th:href="@{/user}">用户管理</a></li>
+							<li class="active"><i class="fa fa-user-circle-o"></i> 分配角色</li>
+						</ol>
+					</div>
+				</div>
+				<!--提示区-->
+				<form action="#" method="POST" class="form-horizontal" role="form"
+					id="assignRolesForm" th:action="@{/user/assignRoles}"
+					th:object="${assignUserRoleResult}">
+					<!-- 成功提示 -->
+					<div class="row" th:if="${success}">
+						<div class="col-md-12">
+							<div id="alertDialogeSuccess"
+								class="alert alert-success alert-dismissible fade in"
+								role="alert">
+								<button type="button" class="close" data-dismiss="alert"
+									aria-label="Close">
+									<span aria-hidden="true">&times;</span>
+								</button>
+								<p>分配角色成功！</p>
+							</div>
+						</div>
+					</div>
+
+					<!--工具栏-->
+					<div class="row">
+						<div class="col-md-12 ">
+							<p>
+								<a class="btn btn-default" href="userManage.html"
+									th:href="@{/user}"><i class="fa fa-reply fa-fw"></i> 返回</a>
+							</p>
+						</div>
+					</div>
+
+					<!--表单区-->
+					<div class="row">
+						<div class="col-md-12">
+							<div class="panel panel-default">
+								<div class="panel-body">
+									<input type="hidden" th:field=*{sysUser.id}>
+									<div class="form-group">
+										<label class="col-md-2 control-label">用户姓名：</label>
+ 										<div class="col-md-3">
+											<p th:text="*{sysUser.userFullName}"></p>
+										</div>
+									</div>
+									<div class="form-group">
+										<label class="col-md-2 control-label">用户名：</label>
+										<div class="col-md-3">
+												<p th:text="*{sysUser.userName}"></p>
+										</div>
+									</div>
+									<!--  
+									<div class="form-group">
+										<label class="col-md-2 control-label">证件类型：</label>
+										<div class="col-md-3">
+											<p th:text="*{sysUser.sysCredentialType.name}"></p>
+										</div>
+									</div>
+
+									<div class="form-group">
+										<label class="col-md-2 control-label" >证件号码：</label>
+										<div class="col-md-3">
+											<p th:text="*{sysUser.credentialNo}"></p>
+										</div>
+									</div>
+
+									<div class="form-group">
+										<label class="col-md-2 control-label" >所属省中心：</label>
+										<div class="col-md-3">
+											<p th:text="*{sysUser.sysProvince.provinceName}"></p>
+										</div>
+									</div>
+
+									<div class="form-group">
+										<label class="col-md-2 control-label" >所属市级分中心：</label>
+										<div class="col-md-3">
+											<p th:text="*{sysUser.sysCity.cityName}"></p>
+										</div>
+									</div>
+
+									<div class="form-group">
+										<label class="col-md-2 control-label">用户描述：</label>
+										<div class="col-md-3">
+											<p th:text="*{sysUser.description}"></p>
+										</div>
+									</div>
+									-->
+									<div class="form-group">
+										<label class="col-md-2 control-label">用户角色：</label>
+										<div class="col-md-10">
+											<select multiple="multiple" size="10" id="userRolesSelect" name="selectedRoleList" 
+												class="form-control">
+												<option th:each="userRoleDefinition : *{userRoleDefList}"
+													th:value="${userRoleDefinition.roleId}"
+													th:text="${userRoleDefinition.roleName}" 
+													th:selected="${userRoleDefinition.isAuthority} ? 'selected'"></option>
+											</select>
+										</div>
+									</div>
+
+									<div class="form-group">
+										<div class="col-sm-10 col-sm-offset-2">
+											<button id="saveBtn" type="submit" class="btn btn-primary">
+												<i class="fa fa-check fa-fw"></i> 确定
+											</button>
+										</div>
+									</div>
+
+								</div>
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+
+		</div>
+		<!-- /#page-wrapper -->
+	</div>
+	<!-- /#wrapper -->
+	<div th:include="common/footer :: footer"></div>
+</body>
+
+</html>

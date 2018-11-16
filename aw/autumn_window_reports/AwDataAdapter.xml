@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<jdbcDataAdapter class="net.sf.jasperreports.data.jdbc.JdbcDataAdapterImpl"><name>AwDataAdapter</name><driver>oracle.jdbc.driver.OracleDriver</driver><username>tiger</username><password>tiger</password><savePassword>true</savePassword><url>jdbc:oracle:thin:@172.26.0.86:1521:awdb</url><database></database><serverAddress></serverAddress><classpath>C:\Users\tianlu\.m2\repository\com\oracle\ojdbc\8\ojdbc-8.jar</classpath></jdbcDataAdapter>

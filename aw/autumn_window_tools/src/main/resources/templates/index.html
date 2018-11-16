@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+
+<head th:replace="common/base:: head(~{::title},~{},~{::script})">
+<title>[[#{system.name}]]-首页</title>
+<!-- 	本页使用的JS -->
+<script type="text/javascript">
+		$(document).ready(function() {
+			window.setTimeout(function(){
+			    $('[data-dismiss="alert"]').alert('close');
+			},5000);
+		});
+	</script>
+</head>
+
+<body>
+
+	<div id="wrapper">
+      <div th:include="common/headerAndMenu :: headerAndMenu"></div>
+
+		<!-- Page Content -->
+		<div id="page-wrapper">
+			<div class="container-fluid">
+				<!--路径导航-->
+				<div class="row">
+					<div class="col-md-12">
+						<h3 class="page-header">首页</h3>
+<!-- 						<ol class="breadcrumb">
+							<li class="active"><i class="fa fa-home fa-fw"></i>  首页</li>
+						</ol> -->
+						<h4>欢迎您使用[[#{system.name}]]！</h4>
+					</div>
+				</div>
+				<!--提示区-->
+				<!-- 成功提示 -->
+					<div class="row" th:if="${success}==true">
+						<div class="col-md-12">
+							<div id="alertDialogeSuccess"
+								class="alert alert-success alert-dismissible fade in"
+								role="alert">
+								<button type="button" class="close" data-dismiss="alert"
+									aria-label="Close">
+									<span aria-hidden="true">&times;</span>
+								</button>
+								<p th:text="${message}"></p>
+								<p>
+									请您<a href="#"  class="alert-link" onclick="document.logoutForm.submit();">退出</a> 后，重新登录！
+								</p>
+							</div>
+						</div>
+					</div>
+
+					<!-- 失败提示-->
+					<div class="row" th:if="${success}==false">
+						<div class="col-md-12">
+							<div id="alertDialogeFailure"
+								class="alert alert-danger alert-dismissible fade in"
+								role="alert">
+								<button type="button" class="close" data-dismiss="alert"
+									aria-label="Close">
+									<span aria-hidden="true">&times;</span>
+								</button>
+								<p th:text="${exception.message}" />
+							</div>
+						</div>
+					</div>
+				<!-- /.row -->
+			</div>
+			<!-- /.container-fluid -->
+		</div>
+		<!-- /#page-wrapper -->
+	</div>
+	<!-- /#wrapper -->
+	<div th:include="common/footer :: footer"></div>
+</body>
+</html>

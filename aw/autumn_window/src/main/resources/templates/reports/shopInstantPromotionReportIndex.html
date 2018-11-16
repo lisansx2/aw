@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+
+<head th:replace="common/base:: head(~{::title},~{},~{::script})">
+<title>[[#{aw.system.name}]]-门店即开促销兑奖报表</title>
+
+<!-- 本页使用的JS-->
+<script type="text/javascript" th:inline="javascript">
+    $(document).ready(function() {
+		window.setTimeout(function(){
+		    $('[data-dismiss="alert"]').alert('close');
+		},5000);
+		
+	    $('#datetimepickerStart').datetimepicker({
+	        format: 'YYYY/MM/DD',
+	    	locale: 'zh-cn',
+	        dayViewHeaderFormat: 'YYYY MMMM',
+	        //useCurrent: false,
+	        minDate: moment().subtract(561, 'days'),
+	        maxDate: moment().subtract(1, 'days'),
+	        tooltips: {
+	            today: '今天',
+	            clear: '清除选择',
+	            close: '关闭',
+	            selectMonth: '选择月',
+	            prevMonth: '上个月',
+	            nextMonth: '下个月',
+	            selectYear: '选择年',
+	            prevYear: '前一年',
+	            nextYear: '后一年',
+	            selectDecade: '选择十年',
+	            prevDecade: '前十年',
+	            nextDecade: '后十年',
+	            prevCentury: '上世纪',
+	            nextCentury: '下世纪'
+	        }
+	    });
+	    $('#datetimepickerEnd').datetimepicker({
+	    	format: 'YYYY/MM/DD',
+	    	locale: 'zh-cn',
+	        dayViewHeaderFormat: 'YYYY MMMM',
+	        maxDate: moment().subtract(1, 'days'),
+	        tooltips: {
+	            today: '今天',
+	            clear: '清除选择',
+	            close: '关闭',
+	            selectMonth: '选择月',
+	            prevMonth: '上个月',
+	            nextMonth: '下个月',
+	            selectYear: '选择年',
+	            prevYear: '前一年',
+	            nextYear: '后一年',
+	            selectDecade: '选择十年',
+	            prevDecade: '前十年',
+	            nextDecade: '后十年',
+	            prevCentury: '上世纪',
+	            nextCentury: '下世纪'
+	        }
+	    });
+	    
+
+	    $("#datetimepickerStart").on("dp.change", function (e) {
+	    	console.log("date:" + e.date);
+	    	var endDate = moment(e.date).add(31,'days');
+	    	var maxEndDate = moment(moment().subtract(1, 'days').format('YYYY/MM/DD'),'YYYY/MM/DD');
+	    	console.log("endDate:" + endDate);
+	    	console.log("maxEndDate:" + maxEndDate);
+	    	$('#datetimepickerEnd').data("DateTimePicker").clear();
+	    	$('#datetimepickerEnd').data("DateTimePicker").minDate(false);
+	    	$('#datetimepickerEnd').data("DateTimePicker").maxDate(false);
+
+	    	$('#datetimepickerEnd').data("DateTimePicker").minDate(e.date);
+	    	if(endDate <= maxEndDate){
+		    	$('#datetimepickerEnd').data("DateTimePicker").date(endDate);
+		        $('#datetimepickerEnd').data("DateTimePicker").maxDate(endDate);
+	    	}else{
+	    		$('#datetimepickerEnd').data("DateTimePicker").date(maxEndDate);
+	    		$('#datetimepickerEnd').data("DateTimePicker").maxDate(maxEndDate);
+	    	}
+	    });
+	    
+
+    	$.extend($.fn.dataTable.defaults, {
+            "searching": false,
+            "responsive": true,
+            "serverSide": true,
+            "processing": true,
+            "language": {
+                "sProcessing": "<div></div><div></div><div></div><div></div><div></div>",
+                "sLengthMenu": "显示 _MENU_ 项结果",
+                "sZeroRecords": "没有匹配结果",
+                "sInfo": "显示第 _START_ 至 _END_ 项结果，共 _TOTAL_ 项",
+                "sInfoEmpty": "显示第 0 至 0 项结果，共 0 项",
+                "sInfoFiltered": "(由 _MAX_ 项结果过滤)",
+                "sInfoPostFix": "",
+                "sSearch": "搜索:",
+                "sUrl": "",
+                "sEmptyTable": "表中数据为空",
+                "sLoadingRecords": "载入中...",
+                "sInfoThousands": ",",
+                "oPaginate": {
+                    "sFirst": "首页",
+                    "sPrevious": "上页",
+                    "sNext": "下页",
+                    "sLast": "末页"
+                },
+                "oAria": {
+                    "sSortAscending": ": 以升序排列此列",
+                    "sSortDescending": ": 以降序排列此列"
+                }
+            },
+            "lengthMenu": [
+                [10, 25, 50, -1],
+                [10, 25, 50, "全部"]
+            ],
+            "pagingType": "full_numbers"
+
+        });
+
+        $.fn.dataTable.ext.errMode = 'none';
+        
+        var dataTable= $('#dataTable').on( 'error.dt', function ( e, settings, techNote, message ) {
+                console.log( 'An error has been reported by DataTables: ', message );
+            } )
+        .DataTable({
+			"ajax": {
+		        "url": [[@{/api/reports/shopInstantPromotionReport/search}]],
+		        "type": "POST",
+		        "data": function ( d ) {
+	                d.promotionNo = $('#promotionSelect').val();
+		        	d.startDate = $('#startDateInput').val();
+	               	d.endDate = $('#endDateInput').val();
+	               	d.shopNo =$('#shopNoInput').val();
+		        	d.userOrg = $('#userOrg').val();	
+	            } 
+		    },
+        	"columns": [
+    			{ "data": "shopNo", "title":"门店编号" },
+    			{ "data": "orgName", "title":"所属机构" },
+    			{ "data": "promotionName" ,"title":"促销活动名称"},
+    			{ "data": "sumBonus" ,"title":"促销兑奖金额（元）"}
+ 			 ],
+ 			"order": [ [ 0, "asc" ] ]
+        });
+        
+        
+        $("#searchBtn").click(function(e){
+           	//阻止表单提交
+        	e.preventDefault();
+      		
+        	var startDate = $('#startDateInput').val();
+           	if(!$('#startDateInput').val()){
+           		displayPromptInfo("开始日期不能为空");
+           		return;
+           	}
+           	var endDate = $('#endDateInput').val();
+           	if(!$('#endDateInput').val()){
+           		displayPromptInfo("结束日期不能为空");
+           		return;
+           	}
+        	//重新加载DT
+           	dataTable.ajax.reload();
+           	           	
+           //修改导出pdf链接地址
+           $("#exportPdfA").attr("href",getExportReportParams('pdf')); 
+            //修改导出excel链接地址
+           	$("#exportExcelA").attr("href",getExportReportParams('xls')); 
+          });
+        
+      //初始化导出报表链接
+        $("#exportPdfA").attr("href",getExportReportParams('pdf'));   
+        $("#exportExcelA").attr("href",getExportReportParams('xls')); 
+        
+	       $('#userOrg').click(function() {
+	     		var orgTreeJson;
+	    		$.ajax({
+	    	          type : "get", 
+	    	          url : [[@{/api/common/org/getOrgTree/superMarket}]],
+	    	          async : false,
+	    	          success : function(data){
+	    	        	  orgTreeJson =  data; 
+	    	          }
+	    	      }); 
+	    		 console.log("getOrgTree:" + orgTreeJson);
+	    	   $('#orgTreeview').treeview({
+	               data: orgTreeJson,
+	               onNodeSelected: function(event, node) {
+	 	                $('#userOrg').val(node.text);
+	 	                $('#orgTreeview' ).hide();  
+	 	              }
+	             }); 
+	    	   $('#orgTreeview').toggle();
+	       });
+	       
+    });
+    
+    function displayPromptInfo(content){
+    	if(!$("#promptInfoDiv #alertDialoge")[0]){
+   			$("#promptInfoDiv .col-md-12").html("<div id=\"alertDialoge\" class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\"><button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\"> <span aria-hidden=\"true\">&times;</span> </button> <p></p> </div>");
+   		}
+    	$("#promptInfoDiv p").text(content);
+   		$("#promptInfoDiv").css('display','block');
+		window.setTimeout(function(){
+		    $('[data-dismiss="alert"]').alert('close');
+		},5000);
+    }
+    
+    function getExportReportParams(type){
+     	var exportUrl = [[@{/reports/shopInstantPromotionReport/exportFile/门店即开促销兑奖报表}]];
+        var userOrg = $('#userOrg').val().split('  ')[0];
+        var promotionNo = $('#promotionSelect').val();
+    	var startDate = $('#startDateInput').val();
+       	var endDate = $('#endDateInput').val();
+       	var shopNo =$('#shopNoInput').val();
+       	var getParams = "&&userOrg=" + userOrg + "&&promotionNo=" + promotionNo + "&&startDate=" + startDate + "&&endDate=" + endDate + "&&shopNo=" +shopNo;
+       if(type == "pdf")
+    	   return exportUrl + "?format=pdf" + getParams;
+       if(type == "xls")
+    	   return exportUrl + "?format=xls" + getParams;
+    }
+    </script>
+</head>
+
+<body>
+	<div id="wrapper">
+		<!-- Navigation -->
+		<div th:include="common/headerAndMenu :: headerAndMenu"></div>
+		<!-- Page Content -->
+		<div id="page-wrapper">
+			<div class="container-fluid">
+				<!--路径导航-->
+				<div class="row">
+					<div class="col-md-12">
+						<h3 class="page-header">门店即开促销兑奖报表</h3>
+						<ol class="breadcrumb">
+							<li><a href="#" th:href="@{/}">首页</a></li>
+							<li>报表管理</li>
+							<li class="active">门店即开促销兑奖报表</li>
+						</ol>
+					</div>
+				</div>
+				<!--提示区-->
+				<div class="row" style="display: none" id="promptInfoDiv">
+					<div class="col-md-12">
+						<div id="alertDialoge"
+							class="alert alert-danger alert-dismissible fade in"
+							role="alert">
+							<button type="button" class="close" data-dismiss="alert"
+								aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+							<p></p>
+						</div>
+					</div>
+				</div>
+				<!-- 成功提示 -->
+				<div class="row" th:if="${success}==true">
+					<div class="col-md-12">
+						<div id="alertDialogeSuccess"
+							class="alert alert-success alert-dismissible fade in"
+							role="alert">
+							<button type="button" class="close" data-dismiss="alert"
+								aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+							<p th:text="${message}"></p>
+						</div>
+					</div>
+				</div>
+
+				<!-- 失败提示-->
+				<div class="row" th:if="${success}==false">
+					<div class="col-md-12">
+						<div id="alertDialogeFailure"
+							class="alert alert-danger alert-dismissible fade in" role="alert">
+							<button type="button" class="close" data-dismiss="alert"
+								aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+							<p th:text="${exception.message}" />
+						</div>
+					</div>
+				</div>
+
+				<!--查询区-->
+				<div class="row">
+					<div class="col-md-12">
+						<div class="panel panel-default">
+							<div class="panel-body">
+								<form class="form-horizontal" role="form" id="searchForm" method="post">
+									<div class="row">
+										<div class="col-md-3">
+										
+											<div class="form-group">
+												<label class="col-md-4 control-label" for="userOrg">所属机构：</label>
+												<div class="col-md-8">
+ 													<input type="text" id="userOrg" name="userOrg" class="form-control"
+														value="" placeholder="请选择机构" readonly="readonly" >
+												</div>
+											</div>
+											
+											<div class="form-group">
+												<div class="col-md-10 col-md-offset-2" id="orgTreeview"
+													style="display: none;"></div>
+											</div>
+											
+											<div class="form-group">
+												<label class="col-md-4 control-label" for="promotionSelect">促销活动名称：</label>
+												<div class="col-md-8">
+													<select class="form-control" id="promotionSelect" name="promotionNo">
+														<option value="">--全部--</option>
+														<option th:each="promotion : ${allPromotion}" th:value="${promotion.promotionNo}"
+															th:text="${promotion.promotionName}"></option>
+													</select>
+												</div>
+											</div>
+										</div>
+
+										<div class="col-md-3">
+											<div class="form-group">
+												<label class="col-md-4 control-label">门店编号：</label>
+												<div class="col-md-8">
+													<input type="text" class="form-control"
+														id="shopNoInput" name="shopNo" placeholder="">
+												</div>
+											</div>
+										</div>
+										
+										<div class="col-md-6">
+											<div class="form-group">
+												<label class="col-md-2 control-label">日期范围：</label>
+												<div class="col-md-4">
+														<div class='input-group date' id='datetimepickerStart'>
+															<input type='text' class="form-control"  id = "startDateInput"/> <span
+																class="input-group-addon"> <span
+																class="glyphicon glyphicon-calendar" ></span>
+															</span>
+														</div>
+												</div>
+												<label class="col-md-1 control-label">至：</label>
+												<div class="col-md-4">
+														<div class='input-group date' id='datetimepickerEnd'>
+															<input type='text' class="form-control"  id = "endDateInput"/> <span
+																class="input-group-addon"> <span
+																class="glyphicon glyphicon-calendar" ></span>
+															</span>
+													</div>
+											</div>
+										</div>
+										<div class="form-group">
+												<div class="col-sm-offset-10 col-sm-2">
+													<button class="btn btn-default  btn-primary" id="searchBtn">
+														<i class="fa fa-search fw"></i> 查询
+													</button>
+												</div>
+											</div>
+										</div>
+								</div>	
+								</form>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!--工具栏-->
+				<div class="row">
+					<div class="col-md-12 form-group">
+						<p>
+							<a class="btn btn-default"  download="shopInstantPromotionReport"  
+								sec:authorize="hasAuthority('exportPdfShopInstantPromotionReport')" id="exportPdfA"><i class="fa fa-file-pdf-o"></i>
+								导出PDF</a>
+
+							<a class="btn btn-default" download="shopInstantPromotionReport"  
+								 sec:authorize="hasAuthority('exportExcelShopInstantPromotionReport')" id="exportExcelA"><i class="fa fa-file-excel-o"></i>
+								 导出EXCEL</a>
+						</p>
+					</div>
+				</div>
+				<!--列表区-->
+				<div class="row">
+					<div class="col-md-12">
+						<table id="dataTable" class="table table-striped table-bordered"
+							cellspacing="0" width="100%">
+						</table>
+					</div>
+				</div>
+			</div>
+			<!-- /#page-wrapper -->
+		</div>
+	</div>
+	<!-- /#wrapper -->
+	<div th:include="common/footer :: footer"></div>
+</body>
+
+</html>

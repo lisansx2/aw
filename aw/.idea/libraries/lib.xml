@@ -1,0 +1,28 @@
+<component name="libraryTable">
+  <library name="lib">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/aw_client2_demo/lib/smack-3.1.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/aw_client2_demo/lib/aopalliance-1.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/aw_client2_demo/lib/wsdl4j-1.6.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/aw_client2_demo/lib/spring-core-3.0.5.RELEASE.jar!/" />
+      <root url="jar://$PROJECT_DIR$/aw_client2_demo/lib/spring-jms-3.0.5.RELEASE.jar!/" />
+      <root url="jar://$PROJECT_DIR$/aw_client2_demo/lib/spring-context-support-3.0.5.RELEASE.jar!/" />
+      <root url="jar://$PROJECT_DIR$/aw_client2_demo/lib/spring-webmvc-3.0.5.RELEASE.jar!/" />
+      <root url="jar://$PROJECT_DIR$/aw_client2_demo/lib/commons-logging-1.1.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/aw_client2_demo/lib/spring-xml-2.0.0.RELEASE.jar!/" />
+      <root url="jar://$PROJECT_DIR$/aw_client2_demo/lib/bcprov-jdk16-1.43.jar!/" />
+      <root url="jar://$PROJECT_DIR$/aw_client2_demo/lib/spring-oxm-3.0.5.RELEASE.jar!/" />
+      <root url="jar://$PROJECT_DIR$/aw_client2_demo/lib/spring-beans-3.0.5.RELEASE.jar!/" />
+      <root url="jar://$PROJECT_DIR$/aw_client2_demo/lib/spring-context-3.0.5.RELEASE.jar!/" />
+      <root url="jar://$PROJECT_DIR$/aw_client2_demo/lib/spring-ws-core-2.0.0.RELEASE.jar!/" />
+      <root url="jar://$PROJECT_DIR$/aw_client2_demo/lib/spring-aop-3.0.5.RELEASE.jar!/" />
+      <root url="jar://$PROJECT_DIR$/aw_client2_demo/lib/spring-asm-3.0.5.RELEASE.jar!/" />
+      <root url="jar://$PROJECT_DIR$/aw_client2_demo/lib/spring-expression-3.0.5.RELEASE.jar!/" />
+      <root url="jar://$PROJECT_DIR$/aw_client2_demo/lib/spring-tx-3.0.5.RELEASE.jar!/" />
+      <root url="jar://$PROJECT_DIR$/aw_client2_demo/lib/spring-web-3.0.5.RELEASE.jar!/" />
+      <root url="jar://$PROJECT_DIR$/aw_client2_demo/lib/spring-ws-support-2.0.0.RELEASE.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

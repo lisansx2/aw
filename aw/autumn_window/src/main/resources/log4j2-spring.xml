@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration status="error" shutdownHook="disable">
+    <appenders>
+        <!--打印info日志到控制台		-->
+        <Console name="console" target="SYSTEM_OUT">
+           <PatternLayout pattern="%d{yyyy-MM-dd HHmmss:SSS}.%X{ip}!%c%L.%X{pid},%t:%p %m%n"/>
+        </Console>
+
+		
+		<!-- 打印info日志到文件，按大小（50MB）备份日志文件，每天最多20个，并把备份的日志文件存到年月文件夹-->
+        <RollingFile name="innerLogFile" fileName="/cslc/aw/logs/inner.log"
+                     filePattern="/cslc/aw/logs/inner.log-%d{yyyy-MM-dd}-%i" immediateFlush="true">
+            <PatternLayout pattern="%d{yyyy-MM-dd HHmmss:SSS}.%X{ip}!%c%L.%X{pid},%t:%p %m%n"/>
+            <SizeBasedTriggeringPolicy size="50MB"/>
+            <DefaultRolloverStrategy max="20"/>
+        </RollingFile>
+        
+        <!-- 打印error日志到文件，按日期（日）备份日志文件，并把备份的日志文件存到年月文件夹 -->
+        <RollingFile name="outerLogFile" fileName="/cslc/aw/logs/outer.log"
+                     filePattern="/cslc/aw/logs/outer.log-%d{yyyy-MM-dd}" immediateFlush="true">
+            <PatternLayout pattern="%d{yyyy-MM-dd HHmmss:SSS}.%X{ip}!%c%L.%X{pid},%t:%p %m%n"/>
+            <TimeBasedTriggeringPolicy modulate="true" interval="1"/>
+        </RollingFile>
+        
+    </appenders>
+    
+    <loggers>
+        <asyncRoot level="debug"  includeLocation="true">
+            <appender-ref ref="innerLogFile" level="info"/>
+            <appender-ref ref="outerLogFile" level="error"/>
+            <appender-ref ref="console" level="info"/>
+        </asyncRoot>
+        
+        <!-- Hibernate打印SQL日志 -->
+        <AsyncLogger name="org.hibernate.SQL" level="debug" includeLocation="true">
+            <appender-ref ref="console" />
+            <appender-ref ref="innerLogFile" />
+        </AsyncLogger>
+       	<AsyncLogger name="org.hibernate.type.descriptor.sql.BasicBinder" level="TRACE" includeLocation="true">
+            <appender-ref ref="console" />
+            <appender-ref ref="innerLogFile" />
+        </AsyncLogger>
+
+		<!-- 开启jdbc日志
+		<AsyncLogger name="druid.sql.Statement" level="DEBUG" includeLocation="true">
+			<appender-ref ref="console" />
+            <appender-ref ref="innerLogFile" />
+		</AsyncLogger>
+ 		-->
+        <!-- Spring WebService日志 -->
+        <AsyncLogger name="org.springframework.ws" level="trace" includeLocation="true" >
+            <appender-ref ref="console" />
+            <appender-ref ref="innerLogFile" />
+        </AsyncLogger>
+        
+    </loggers>
+</configuration>

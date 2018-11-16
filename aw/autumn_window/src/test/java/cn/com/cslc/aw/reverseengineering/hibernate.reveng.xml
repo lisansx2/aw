@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-reverse-engineering PUBLIC "-//Hibernate/Hibernate Reverse Engineering DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-reverse-engineering-3.0.dtd" >
+
+<hibernate-reverse-engineering>
+	<table-filter match-schema="AW" match-name="R_BASE_REPORT" />
+	<table-filter match-schema="AW" match-name="SYS_AUTHORITY" />
+	<table-filter match-schema="AW" match-name="SYS_CITY" />
+	<table-filter match-schema="AW" match-name="SYS_CREDENTIAL_TYPE" />
+	<table-filter match-schema="AW" match-name="SYS_ORGANIZATION" />
+	<table-filter match-schema="AW" match-name="SYS_PROVINCE" />
+	<table-filter match-schema="AW" match-name="SYS_RESOURCE" />
+	<table-filter match-schema="AW" match-name="SYS_RESOURCE_TYPE" />
+	<table-filter match-schema="AW" match-name="SYS_ROLE" />
+	<table-filter match-schema="AW" match-name="SYS_ROLE_RESOURCE" />
+	<table-filter match-schema="AW" match-name="SYS_USER" />
+	<table-filter match-schema="AW" match-name="SYS_USER_ORGANIZATION" />
+	<table-filter match-schema="AW" match-name="SYS_USER_STATE" />
+	<table-filter match-name="SYS_GAME" match-schema="AW"></table-filter>
+</hibernate-reverse-engineering>

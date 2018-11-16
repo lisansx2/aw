@@ -1,0 +1,114 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="head(title,links,scripts)">
+
+<meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="description" content="" />
+<meta name="author" content="" />
+<meta name="_csrf" th:content="${_csrf.token}"/>  
+<meta name="_csrf_header" th:content="${_csrf.headerName}"/>  
+<title th:replace="${title}">体彩小型业务管理系统</title>
+<link rel="icon" type="image/x-icon" th:href="@{/favicon.ico}" >
+
+<!-- Bootstrap CSS -->
+<link href="../vendor/Bootstrap-3.3.7/css/bootstrap.min.css"
+	rel="stylesheet" type="text/css"
+	th:href="@{/webjars/bootstrap/dist/css/bootstrap.min.css}" />
+
+<!-- MetisMenu CSS（手风琴菜单样式） -->
+<link href="../vendor/metismenu-2.6.3/dist/metisMenu.min.css"
+	rel="stylesheet" type="text/css"
+	th:href="@{/webjars/metisMenu/dist/metisMenu.min.css}" />
+
+<!-- Font-Awesome CSS（字体图标样式） -->
+<link href="../vendor/Font-Awesome-4.7.0/css/font-awesome.min.css"
+	rel="stylesheet" type="text/css"
+	th:href="@{/webjars/font-awesome/css/font-awesome.min.css}" />
+
+<!-- Custom styles for this template -->
+<!-- <link href="../dist/css/sticky-footer.css" rel="stylesheet"
+	th:href="@{/dist/css/sticky-footer.css}" /> -->
+
+<link href="../dist/css/jquery.sticky-footer.min.css" rel="stylesheet"
+	th:href="@{/dist/css/jquery.sticky-footer.min.css}" />
+
+<!--Bootstrap Validator CSS（表单校验样式）-->
+<link rel="stylesheet"
+	href="../vendor/bootstrapvalidator-0.5.3/dist/css/bootstrapValidator.css"
+	th:href="@{/webjars/bootstrapValidator/dist/css/bootstrapValidator.min.css}" />
+
+<!-- DataTables CSS（数据表格）-->
+<link rel="stylesheet"   th:href="@{/webjars/datatables/media/css/dataTables.bootstrap.css}" />
+<link rel="stylesheet"   th:href="@{/dist/css/dataTables.customLoader.circle.css}" />
+
+<!--日期控件样式-->
+<link rel="stylesheet" th:href="@{/webjars/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css}" />
+
+<!--treeview样式-->
+<link rel="stylesheet" th:href="@{/webjars/bootstrap-treeview/dist/bootstrap-treeview.min.css}" />
+				
+<!-- 项目Common CSS -->
+<link href="../dist/css/aw.min.css" rel="stylesheet"
+	th:href="@{/dist/css/aw.css}" />
+
+<!-- jQuery JS-->
+<script src="../vendor/jQuery-2.2.4/jquery-2.2.4.min.js"
+	th:src="@{/webjars/jquery/dist/jquery.min.js}"></script>
+
+<!-- Bootstrap JS -->
+<script src="../vendor/Bootstrap-3.3.7/js/bootstrap.min.js"
+	th:src="@{/webjars/bootstrap/dist/js/bootstrap.min.js}"></script>
+
+<!-- MetisMenu JS（手风琴菜单JS） -->
+<script src="../vendor/metismenu-2.4.2/dist/metisMenu.min.js"
+	th:src="@{/webjars/metisMenu/dist/metisMenu.min.js}"></script>
+
+<!-- Bootstrap Validator JS（表单校验JS）-->
+<script type="text/javascript"
+	src="../vendor/bootstrapvalidator-0.5.3/dist/js/bootstrapValidator.min.js"
+	th:src="@{/webjars/bootstrapValidator/dist/js/bootstrapValidator.min.js}"></script>
+<script type="text/javascript"
+	src="../vendor/bootstrapvalidator-0.5.3/dist/js/language/zh_CN.js"
+	th:src="@{/webjars/bootstrapValidator/dist/js/language/zh_CN.js}"></script>
+
+<!-- DataTables JS（数据表格JS）-->
+<script type="text/javascript"
+	src="../vendor/DataTables-1.10.13/js/jquery.dataTables.min.js"
+	th:src="@{/webjars/datatables/media/js/jquery.dataTables.min.js}"></script>
+<script type="text/javascript"
+	src="../vendor/DataTables-1.10.13/js/dataTables.bootstrap.min.js"
+	th:src="@{/webjars/datatables/media/js/dataTables.bootstrap.min.js}"></script>
+<script type="text/javascript"
+	src="../vendor/Responsive-2.1.0/js/dataTables.responsive.min.js"
+	th:src="@{/webjars/datatables-responsive/js/dataTables.responsive.js}"></script>
+<script type="text/javascript"
+	src="../vendor/Responsive-2.1.0/js/responsive.bootstrap.min.js"
+	th:src="@{/webjars/datatables-responsive/js/responsive.bootstrap.js}"></script>
+
+<!-- 日期控件JS-->
+<script type="text/javascript" th:src="@{/webjars/moment/min/moment-with-locales.min.js}"></script>
+<script type="text/javascript" th:src="@{/webjars/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js}"></script>
+
+<script type="text/javascript" th:src="@{/dist/js/jquery.sticky-footer.min.js}"></script>
+
+<!--treeview JS-->
+<script type="text/javascript" th:src="@{/webjars/bootstrap-treeview/dist/bootstrap-treeview.min.js}" ></script>
+
+
+<!-- 项目Common JS -->
+<script src="../dist/js/aw.js" th:src="@{/dist/js/aw.js}"></script>
+
+<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+<!--[if lt IE 9]>
+        <script src="../vendor/html5shiv-3.7.3/dist/html5shiv.min.js" th:src="@{/webjars/html5shiv/dist/html5shiv.min.js}"></script>
+        <script src="../vendor/Respond-1.4.2/dest/respond.min.js" th:src="@{/webjars/respond/dest/respond.min.js}"></script>
+    <![endif]-->
+
+<!--/* Per-page placeholder for additional */-->
+<th:block th:replace="${links}" />
+<th:block th:replace="${scripts}" />
+  
+</head>
+</html>

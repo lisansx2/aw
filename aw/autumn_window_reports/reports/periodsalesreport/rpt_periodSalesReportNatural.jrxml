@@ -1,0 +1,749 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.3.1.final using JasperReports Library version 6.3.1  -->
+<!-- 2018-11-05T20:34:10 -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="rpt_periodSalesReport" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" isIgnorePagination="true" uuid="ed76dc08-84cc-4aa1-bddd-c3bd6fb9eb35">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
+	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
+	<property name="com.jaspersoft.studio.data.sql.SQLQueryDesigner.sash.w1" value="194"/>
+	<property name="com.jaspersoft.studio.data.sql.SQLQueryDesigner.sash.w2" value="806"/>
+	<property name="com.jaspersoft.studio.property.dataset.dialog.DatasetDialog.sash.w1" value="713"/>
+	<property name="com.jaspersoft.studio.property.dataset.dialog.DatasetDialog.sash.w2" value="277"/>
+	<parameter name="gameName" class="java.lang.String">
+		<defaultValueExpression><![CDATA["超级大乐透"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="shopNoStr" class="java.lang.String">
+		<parameterDescription><![CDATA[]]></parameterDescription>
+		<defaultValueExpression><![CDATA["%%"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="StartDate" class="java.lang.String">
+		<parameterDescription><![CDATA[]]></parameterDescription>
+		<defaultValueExpression><![CDATA[new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").parse("2017/10/23 00:00:00")]]></defaultValueExpression>
+	</parameter>
+	<parameter name="EndDate" class="java.lang.String">
+		<parameterDescription><![CDATA[]]></parameterDescription>
+		<defaultValueExpression><![CDATA[new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").parse("2017/10/23 23:59:59")]]></defaultValueExpression>
+	</parameter>
+	<parameter name="agentNoSet" class="java.util.Set">
+		<defaultValueExpression><![CDATA[new HashSet(Arrays.asList("370302"))]]></defaultValueExpression>
+	</parameter>
+	<parameter name="gameNoSet" class="java.util.Set">
+		<defaultValueExpression><![CDATA[new HashSet(Arrays.asList("85"))]]></defaultValueExpression>
+	</parameter>
+	<parameter name="shopNo" class="java.lang.String">
+		<parameterDescription><![CDATA[]]></parameterDescription>
+		<defaultValueExpression><![CDATA["全部"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="gameNo" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[select S2.*, s1.orgName
+  from (select R1.Shop_No as shopNo,
+               r1.agent_no as agent_no,
+               sum(nvl(R2.Saled_Ticket_Num_Sum, 0)) as saledTicketNumSum,
+               sum(nvl(R2.Saled_Ticket_Amount_Sum, 0) ) as saledTicketAmountSum,
+               sum(nvl(R2.cancel_ticket_num_sum, 0)) as cancelTicketNumSum,
+               sum(nvl(R2.cancel_ticket_amount_sum, 0)) as cancelTicketAmountSum,
+               sum(nvl(R2.refund_ticket_num_sum, 0)) as refundTicketNumSum,
+               sum(nvl(R2.refund_ticket_amount_sum, 0)) as refundTicketAmountSum,
+               sum(nvl(R2.Paid_Ticket_Num_Sum, 0)) as paidTicketNumSum,
+               sum(nvl(R2.Paid_Ticket_Amount_Sum, 0)) as paidTicketAmountSum
+          from (select distinct t.shop_no, t.agent_no
+                  from Sys_Period_Sales_Report_Temp t
+                 where t.Report_Date BETWEEN TRUNC(to_date($P{StartDate}, 'yyyy-mm-dd hh24:mi:ss')) AND
+                       TRUNC(to_date($P{EndDate}, 'yyyy-mm-dd hh24:mi:ss'))
+                   and $X{IN, t.Agent_No, agentNoSet}
+                   and t.shop_no like $P{shopNoStr}) r1
+          left join (select /*+ full(T1) */ T6.Shop_No as shop_no,
+                           t7.agent_no as agent_no,
+                           sum(nvl(T1.Sale_Lottery_Cnt, 0)) as saled_ticket_num_sum,
+                           sum(nvl(T1.Sale_Amount, 0)) as saled_ticket_amount_sum,
+                           sum(nvl(T1.Cancel_Lottery_Cnt, 0)) + sum(nvl(T1.Prov_Cancel_Lottery_Cnt, 0)) + sum(nvl(T1.Branch_Cancel_Lottery_Cnt, 0)) as cancel_ticket_num_sum,
+                           sum(nvl(T1.Cancel_Amount, 0)) + sum(nvl(T1.Prov_Cancel_Amount, 0)) + sum(nvl(T1.Branch_Cancel_Amount, 0)) as cancel_ticket_amount_sum,
+                           decode(t2.tech_system_id, 40, sum(nvl(t1.REFUND_LOTTERY_CNT, 0)), 0) as refund_ticket_num_sum,
+                           decode(t2.tech_system_id, 40, sum(nvl(t1.REFUND_AMOUNT, 0)), 0) as refund_ticket_amount_sum,
+                           sum(nvl(t1.PAID_LOTTERY_CNT, 0)) as paid_ticket_num_sum,
+                           sum(nvl(t1.PAID_AMOUNT, 0)) as paid_ticket_amount_sum
+                      from RC_ACCOUNT_BASE t1, C_Game_Def t2, B_Terminal t3, B_Shop t6, B_Agent t7
+                     where T1.Province_Center_Id = T2.Province_Center_Id
+                       and T1.Province_Center_Id = T3.Province_Center_Id
+                       and T1.Province_Center_Id = T6.Province_Center_Id
+                       and T1.Province_Center_Id = T7.Province_Center_Id
+                       and T1.Game_Id = T2.Game_Id
+                       and T1.Terminal_Id = T3.Terminal_Id
+                       and T3.Shop_Id = t6.shop_id
+                       and T6.Agent_Id = T7.Agent_Id
+                       and $X{IN, T7.Agent_No, agentNoSet}
+                       and T2.Game_No = decode($P{gameNo}, '-1', T2.Game_No, $P{gameNo})
+                       and T1.Report_Date BETWEEN TRUNC(to_date($P{StartDate}, 'yyyy-mm-dd hh24:mi:ss')) AND
+                           TRUNC(to_date($P{EndDate}, 'yyyy-mm-dd hh24:mi:ss'))
+                     group by t6.Shop_No, t2.tech_system_id, t7.agent_no) r2
+            on R1.Shop_No = R2.shop_no
+         group by r1.shop_no, r1.agent_no) s2
+  left join (SELECT t1.CODE agentCode, t3.CODE orgCode, t3.NAME orgName
+               FROM SYS_AGENT t1, sys_org_agent t2, sys_org t3
+              WHERE t1.ID = t2.AGENT_ID
+                AND t2.ORG_ID = t3.ID) s1
+    on s1.agentCode = s2.agent_no
+ order by shopNo asc]]>
+	</queryString>
+	<field name="shopNo" class="java.lang.String"/>
+	<field name="orgName" class="java.lang.String"/>
+	<field name="saledTicketNumSum" class="java.math.BigDecimal"/>
+	<field name="saledTicketAmountSum" class="java.math.BigDecimal"/>
+	<field name="cancelTicketNumSum" class="java.math.BigDecimal"/>
+	<field name="cancelTicketAmountSum" class="java.math.BigDecimal"/>
+	<field name="refundTicketNumSum" class="java.math.BigDecimal"/>
+	<field name="refundTicketAmountSum" class="java.math.BigDecimal"/>
+	<field name="paidTicketNumSum" class="java.math.BigDecimal"/>
+	<field name="paidTicketAmountSum" class="java.math.BigDecimal"/>
+	<variable name="totalSaledTicketNumSum" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{saledTicketNumSum}]]></variableExpression>
+	</variable>
+	<variable name="totalSaleTicketAmountSum" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{saledTicketAmountSum}]]></variableExpression>
+	</variable>
+	<variable name="totaPaidlTicketNumSum" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{paidTicketNumSum}]]></variableExpression>
+	</variable>
+	<variable name="totalPaidTicketAmountSum" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{paidTicketAmountSum}]]></variableExpression>
+	</variable>
+	<variable name="totalCancleTicketNumSum" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{cancelTicketNumSum}]]></variableExpression>
+	</variable>
+	<variable name="totalRefundTicketNumSum" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{refundTicketNumSum}]]></variableExpression>
+	</variable>
+	<variable name="totalCancleTicketAmountSum" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{cancelTicketAmountSum}]]></variableExpression>
+	</variable>
+	<variable name="totalRefundTicketAmountSum" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{refundTicketAmountSum}]]></variableExpression>
+	</variable>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="173" splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+			<staticText>
+				<reportElement key="" x="0" y="55" width="555" height="30" uuid="704f062a-59b8-483e-8628-4efd912e4a06"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle" rotation="None" markup="none">
+					<font fontName="华文宋体" size="20"/>
+				</textElement>
+				<text><![CDATA[时段销量报表(自然日)]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="2" y="110" width="60" height="30" uuid="d91edfb9-9700-40fc-841f-e832fa87258a">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+				</reportElement>
+				<textElement textAlignment="Left">
+					<font fontName="华文宋体"/>
+				</textElement>
+				<text><![CDATA[游戏名称：]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="62" y="110" width="50" height="30" uuid="da0b0e1c-fa57-4a25-8876-a21b9009ef81">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+				</reportElement>
+				<textElement textAlignment="Left">
+					<font fontName="华文宋体"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{gameName}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="322" y="110" width="60" height="30" uuid="a63ab27f-269d-477d-9346-96a8b4547ff1">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+				</reportElement>
+				<textElement textAlignment="Left">
+					<font fontName="华文宋体"/>
+				</textElement>
+				<text><![CDATA[日期范围：]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="382" y="110" width="60" height="30" uuid="0c700855-9168-4030-819d-dc592368c68e">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+				</reportElement>
+				<textElement textAlignment="Left">
+					<font fontName="华文宋体"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{StartDate}.substring(0,10)]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="442" y="110" width="50" height="30" uuid="eb12abd0-c9c9-4be4-a580-a06387a156f5">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+				</reportElement>
+				<textElement textAlignment="Left">
+					<font fontName="华文宋体"/>
+				</textElement>
+				<text><![CDATA[至]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="492" y="110" width="60" height="30" uuid="4f0e489d-5b3a-423f-8cae-e6ed385335c3">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+				</reportElement>
+				<textElement>
+					<font fontName="华文宋体"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{EndDate}.substring(0,10)]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="442" y="142" width="50" height="30" uuid="96329caa-5d53-4f88-b3b4-846758e0bdc2">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+				</reportElement>
+				<textElement textAlignment="Left">
+					<font fontName="华文宋体"/>
+				</textElement>
+				<text><![CDATA[报表打印时间：]]></text>
+			</staticText>
+			<textField pattern="yyyy-MM-dd HH:mm:ss">
+				<reportElement x="492" y="142" width="60" height="30" uuid="fded2310-7045-491e-b6b2-d4afdd91f02d">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+				</reportElement>
+				<textElement textAlignment="Left">
+					<font fontName="华文宋体"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="162" y="110" width="60" height="30" uuid="30fe83fa-fb36-4d6c-be97-b3d107de2b13">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+				</reportElement>
+				<textElement textAlignment="Left">
+					<font fontName="华文宋体"/>
+				</textElement>
+				<text><![CDATA[门店编号：]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="222" y="110" width="50" height="30" uuid="c0ec49a2-681c-4b27-9609-f50be5772d21">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+				</reportElement>
+				<textElement textAlignment="Left">
+					<font fontName="华文宋体"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{shopNo}]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<columnHeader>
+		<band height="30" splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+			<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.FreeLayout"/>
+			<staticText>
+				<reportElement x="2" y="0" width="60" height="30" uuid="60170eaf-c949-48f9-83fa-ae8af956de85">
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="华文宋体"/>
+				</textElement>
+				<text><![CDATA[门店编号]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="112" y="0" width="50" height="30" uuid="b8c2bffa-be92-4251-bf05-18ee6f75bfa2">
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="华文宋体"/>
+				</textElement>
+				<text><![CDATA[销售票数]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="162" y="0" width="60" height="30" uuid="68474ddc-526a-4720-9ac7-3fd551ec9cc5">
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="华文宋体"/>
+				</textElement>
+				<text><![CDATA[净销量（元）]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="442" y="0" width="50" height="30" uuid="0e2d1b76-6a21-4795-86f1-34805b39b47b">
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="华文宋体"/>
+				</textElement>
+				<text><![CDATA[兑奖票数]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="492" y="0" width="60" height="30" uuid="58bba999-fbf0-4675-9674-c74ef6a19be4">
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="华文宋体"/>
+				</textElement>
+				<text><![CDATA[兑奖金额（元）]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="222" y="0" width="50" height="30" uuid="7aac2c1c-3c61-4cf3-88fd-f65f5d6f1c12">
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="华文宋体"/>
+				</textElement>
+				<text><![CDATA[取消票数]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="272" y="0" width="50" height="30" uuid="7dbfbc9c-bef7-4cf4-a562-78a044180561">
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="华文宋体"/>
+				</textElement>
+				<text><![CDATA[取消票金额（元）]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="322" y="0" width="60" height="30" uuid="cabdbe47-8068-4f47-a86f-f4a329ff8bd1">
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="华文宋体"/>
+				</textElement>
+				<text><![CDATA[实退票数]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="382" y="0" width="60" height="30" uuid="56e908ed-9461-4431-8738-c08f4624db1e">
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="华文宋体"/>
+				</textElement>
+				<text><![CDATA[实退金额（元）]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="62" y="0" width="50" height="30" uuid="6c4ed11b-df32-4777-9856-e05a0e8203c8">
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="华文宋体"/>
+				</textElement>
+				<text><![CDATA[所属机构]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="30" splitType="Stretch">
+			<property name="com.jaspersoft.studio.unit.height" value="pixel"/>
+			<property name="com.jaspersoft.studio.layout" value="com.jaspersoft.studio.editor.layout.FreeLayout"/>
+			<textField>
+				<reportElement x="2" y="0" width="60" height="30" uuid="1562de41-d9eb-448c-9b44-c8f4862ab4ed">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="华文宋体"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{shopNo}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="112" y="0" width="50" height="30" uuid="a32261df-cc6a-4cee-93d3-f181d892d1d5">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="华文宋体"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{saledTicketNumSum}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="162" y="0" width="60" height="30" uuid="350c61cd-6ba9-44f2-8276-6303eef7cdad">
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="华文宋体"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{saledTicketAmountSum}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="442" y="0" width="50" height="30" uuid="e0de5e70-f95c-443b-9f48-145bda28996a">
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="华文宋体"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{paidTicketNumSum}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="492" y="0" width="60" height="30" uuid="0562b383-c849-4e71-9e3e-1d84fddd3eb4">
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="华文宋体"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{paidTicketAmountSum}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="222" y="0" width="50" height="30" uuid="beeea161-99fc-461e-9e75-d65466d780d1">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="华文宋体"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{cancelTicketNumSum}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="272" y="0" width="50" height="30" uuid="da0dda48-d832-43e4-ae0d-de4da053cc6b">
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="华文宋体"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{cancelTicketAmountSum}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="382" y="0" width="60" height="30" uuid="4b2719ff-3eea-4f40-ba0b-9543cdbfc496">
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="华文宋体"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{refundTicketAmountSum}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="322" y="0" width="60" height="30" uuid="8799d481-aab2-464a-aa07-3c7b15e11ac5">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="华文宋体"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{refundTicketNumSum}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="62" y="0" width="50" height="30" uuid="b390e7e0-d53f-41b1-9b4a-c8d84d801817">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="华文宋体"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{orgName}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="50"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="81" splitType="Stretch"/>
+	</pageFooter>
+	<lastPageFooter>
+		<band height="56"/>
+	</lastPageFooter>
+	<summary>
+		<band height="53">
+			<textField>
+				<reportElement x="112" y="0" width="50" height="30" uuid="a2999544-9b0f-4e9e-9ca9-adda4d62771c">
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="华文宋体"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{totalSaledTicketNumSum}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="2" y="0" width="60" height="30" uuid="52563950-4a48-483f-8ae7-35cadf51259c">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="华文宋体"/>
+				</textElement>
+				<text><![CDATA[合计]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="162" y="0" width="60" height="30" uuid="a65ea458-bf5d-4c0e-a4be-a796e58b7c05">
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="华文宋体"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{totalSaleTicketAmountSum}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="442" y="0" width="50" height="30" uuid="fa259e6a-0e9b-4c7b-b36f-aaca883f5c19">
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="华文宋体"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{totaPaidlTicketNumSum}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="492" y="0" width="60" height="30" uuid="98d7eaf8-eb43-4561-8d5c-4be811a84675">
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="华文宋体"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{totalPaidTicketAmountSum}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="272" y="0" width="50" height="30" uuid="23890a1a-5dba-43a9-82b0-a6001d7bb5c6">
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="华文宋体"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{totalCancleTicketAmountSum}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="222" y="0" width="50" height="30" uuid="4d962ac8-fb1f-4d62-85df-5071fd073fe1">
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="华文宋体"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{totalCancleTicketNumSum}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="322" y="0" width="60" height="30" uuid="acb2a5a6-6388-4156-8ac0-afa1900c6cc1">
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="华文宋体"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{totalRefundTicketNumSum}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="382" y="0" width="60" height="30" uuid="69c16c02-1dec-40bc-999e-46a55ccf9098">
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="华文宋体"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{totalRefundTicketAmountSum}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="62" y="0" width="50" height="30" uuid="c223f63a-a69f-4459-99e5-8c1e0d2de211">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.x" value="pixel"/>
+					<property name="com.jaspersoft.studio.unit.y" value="pixel"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="华文宋体"/>
+				</textElement>
+				<text><![CDATA[---]]></text>
+			</staticText>
+		</band>
+	</summary>
+</jasperReport>

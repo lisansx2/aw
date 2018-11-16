@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"><head th:replace="common/base:: head(~{::title},~{},~{::script})">
+<title>[[#{aw.system.name}]]-网页不存在</title>
+<!-- 	本页使用的JS -->
+<script type="text/javascript">
+	$(document).ready(function() {
+	});
+</script>
+</head>
+
+<body >
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h3 class="page-header">网页不存在！</h3>
+                    </div>
+                    <!-- /.col-lg-12 -->
+                </div>
+                <!-- /.row -->
+            </div>
+            <!-- /.container-fluid -->
+	<div th:include="common/footer :: footer"></div>
+</body>
+
+</html>

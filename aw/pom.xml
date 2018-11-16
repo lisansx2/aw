@@ -1,0 +1,37 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+    <groupId>cn.com.cslc</groupId>
+	<artifactId>aw_aggregator</artifactId>
+	<version>1.8.1</version>
+	<packaging>pom</packaging>
+	<name>${project.artifactId}</name>
+	
+	<modules>
+		<module>autumn_window</module>	
+	</modules>
+	
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<maven.deploy.skip>true</maven.deploy.skip>
+	</properties>
+	
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-release-plugin</artifactId>
+				<version>2.5.3</version>
+				<configuration>
+					<tagBase>http://svnserver3:8088/SVN/Product/umppro/03-产品源码/tags/aw/4.0.0</tagBase>
+					<branchBase>http://svnserver3:8088/SVN/Product/umppro/03-产品源码/tags/aw</branchBase>
+
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<scm>
+			<developerConnection>scm:svn:http://svnserver3:8088/SVN/Product/umppro/03-产品源码/trunk/aw</developerConnection>
+
+	</scm>
+</project>

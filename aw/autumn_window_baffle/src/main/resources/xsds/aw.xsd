@@ -1,0 +1,143 @@
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+       xmlns:aw="http://www.cslc.com.cn/aw/ws" targetNamespace="http://www.cslc.com.cn/aw/ws"
+       elementFormDefault="qualified">
+
+       <xs:element name="SynchronizeUserRequest">
+              <xs:complexType>
+                     <xs:all>
+                            <xs:element name="Head" type="aw:RequestHead" />
+                            <!-- 登录名，非空、1～30个字符-->
+                            <xs:element name="UserName" >
+                            	<xs:simpleType>
+  									<xs:restriction base="xs:string">
+    									    <xs:minLength value="1"/>
+    										<xs:maxLength value="30"/>
+  									</xs:restriction>
+								</xs:simpleType>
+                            </xs:element>
+                            <!-- 标准格式1XXXXXXXXXXX，11位  -->
+                            <xs:element name="MobilePhoneNumber" >
+                            	<xs:simpleType>
+  									<xs:restriction base="xs:string">
+    									<xs:pattern value="[0-9]{11}"/>
+  									</xs:restriction>
+								</xs:simpleType>
+                            </xs:element>   
+                            <!-- 操作时间，格式：YYYY-MM-DDThh:mm:ss -->
+                            <xs:element name="OperateDate" type="xs:dateTime" />
+                             <!-- 姓名，非空、1～60个字符-->
+                            <xs:element name="UserFullName" >
+                            	<xs:simpleType>
+  									<xs:restriction base="xs:string">
+    									    <xs:minLength value="1"/>
+    										<xs:maxLength value="60"/>
+  									</xs:restriction>
+								</xs:simpleType>
+                            </xs:element>
+                            <!-- userId， 非空、1～10位 -->
+                            <xs:element name="UmpUserId">
+                            	<xs:simpleType>
+  									<xs:restriction base="xs:string">
+   										<xs:minLength value="1"/>
+    									<xs:maxLength value="10"/>
+									</xs:restriction>
+								</xs:simpleType>
+                            </xs:element>
+                            <!-- 证件号，18位、非空 -->
+                            <xs:element name="CredentialNo" >
+                            	<xs:simpleType>
+								  <xs:restriction base="xs:string">
+								     <xs:minLength value="1"/>
+    								 <xs:maxLength value="30"/>
+								  </xs:restriction>
+								</xs:simpleType>
+                            </xs:element>
+                            <!-- 证件类型，参考公共技术编码规范 、非空 -->
+                            <xs:element name="CredentialTypeCode" >
+                            	<xs:simpleType>
+								  <xs:restriction base="xs:string">
+								    <xs:length value="2"/>
+								  </xs:restriction>
+								</xs:simpleType>
+                            </xs:element>
+                            <!-- 省编码，参考公共技术编码规范    非空 -->
+                            <xs:element name="ProvinceNo" >
+                            	<xs:simpleType>
+								  <xs:restriction base="xs:string">
+								    <xs:length value="2"/>
+								  </xs:restriction>
+								</xs:simpleType>
+                            </xs:element>
+                            <!-- 市编码，参考公共技术编码规范 -->
+                            <xs:element name="CityNo" minOccurs="0" >
+                            	<xs:simpleType>
+								  <xs:restriction base="xs:string">
+								    <xs:length value="4"/>
+								  </xs:restriction>
+								</xs:simpleType>
+                            </xs:element>
+                            <!-- 代理编码，固定6位 -->
+                            <xs:element name="AgentNo" minOccurs="0" >
+                            	<xs:simpleType>
+								  <xs:restriction base="xs:string">
+								    <xs:length value="6"/>
+								  </xs:restriction>
+								</xs:simpleType>
+                            </xs:element>
+                            <!-- 0已停用、10已启用  非空 -->
+                            <xs:element name="isEnable" >
+                            	<xs:simpleType>
+								  <xs:restriction base="xs:string">
+								    <xs:enumeration value="0"/>
+								    <xs:enumeration value="10"/>
+								  </xs:restriction>
+								</xs:simpleType>
+                            </xs:element> 
+                            <!--  未删除0，已删除1   非空 -->
+                            <xs:element name="IsDeleted" >
+                            	<xs:simpleType>
+								  <xs:restriction base="xs:string">
+								    <xs:enumeration value="0"/>
+								    <xs:enumeration value="1"/>
+								  </xs:restriction>
+								</xs:simpleType>
+                            </xs:element>
+                           
+                     </xs:all>
+              </xs:complexType>
+       </xs:element>
+
+       <xs:complexType name="RequestHead">
+              <xs:all>
+              		<!--流水号， 10位数字、不足10前补0、0000000001开始 -->
+                     <xs:element name="SerialNumber">
+                     	<xs:simpleType>
+								  <xs:restriction base="xs:string">
+								  		<xs:pattern value="[0-9]{10}"/>
+								  </xs:restriction>
+								</xs:simpleType>
+                     </xs:element>
+                     
+                     <xs:element name="Timestamp" type="xs:dateTime" />
+              </xs:all>
+       </xs:complexType>
+
+       <xs:complexType name="ResponseHead">
+              <xs:all>
+              		 <!-- 流水号，与请求一致 -->
+                     <xs:element name="SerialNumber" type="xs:string" />
+                     <!-- 0代表成功，非0代表失败。失败的编码需要定义 -->
+                     <xs:element name="ReturnCode" type="xs:string" />
+                     <xs:element name="ReturnMessage" type="xs:string" />
+                     <xs:element name="Timestamp" type="xs:dateTime" />
+              </xs:all>
+       </xs:complexType>
+
+       <xs:element name="SynchronizeUserResponse">
+              <xs:complexType>
+                     <xs:all>
+                            <xs:element name="Head" type="aw:ResponseHead" />
+                     </xs:all>
+              </xs:complexType>
+       </xs:element>
+</xs:schema>

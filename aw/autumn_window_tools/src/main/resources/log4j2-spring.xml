@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration status="error" shutdownHook="disable">
+    <appenders>
+        <!--打印info日志到控制台		-->
+        <Console name="console" target="SYSTEM_OUT">
+           <PatternLayout pattern="%d{yyyy-MM-dd HHmmss:SSS}.%X{ip}!%c%L.%X{pid},%t:%p %m%n"/>
+        </Console>
+
+		<!-- 打印info日志到文件，按大小（50MB）备份日志文件，每天最多20个，并把备份的日志文件存到年月文件夹-->
+        <RollingFile name="innerLogFile" fileName="/cslc/aw/logs/tools_inner.log"
+                     filePattern="/aw/logs/tools_inner.log-%d{yyyy-MM-dd}-%i" immediateFlush="true">
+            <PatternLayout pattern="%d{yyyy-MM-dd HHmmss:SSS}.%X{ip}!%c%L.%X{pid},%t:%p %m%n"/>
+            <SizeBasedTriggeringPolicy size="50MB"/>
+            <DefaultRolloverStrategy max="20"/>
+        </RollingFile>
+        
+    </appenders>
+    
+    <loggers>
+        <asyncRoot level="debug" includeLocation="true">
+            <appender-ref ref="innerLogFile" level="info" />
+            <appender-ref ref="console" level="debug"/>
+        </asyncRoot>
+        <logger name="org.springframework.ws" >
+            <appender-ref ref="console" level="trace" />
+            <appender-ref ref="innerLogFile" level="trace" />
+        </logger>
+    </loggers>
+</configuration>

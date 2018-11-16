@@ -1,0 +1,51 @@
+spring: 
+  jackson:
+    date-format:  yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+server:
+  context-path: /aw_tools
+  port: 9443
+  ssl:
+    key-store: classpath:keystore/CaLib.jks
+    key-store-password: 123456
+    key-alias: 127.0.0.1
+logging:
+  level:
+    org.springframework.ws: TRACE
+#debug: true
+403url: /403
+logout-url: /login?logout
+session-expired-time: 30
+app:
+  appName: Autumn Window Tools
+  userDef: 
+    - userName: aw
+      passwd: 123456
+    - userName: aw2
+      passwd: 123456
+  menuDef: 
+    - name: 首页
+      icon: fa fa-home fa-fw
+      url:  /
+    - name: ump模拟器
+      icon: fa fa-wrench fa-fw
+      url:  /ump/simulator
+ws:
+  umpSourceName: ump
+ump-simulator: 
+  endpoint-url: https://127.0.0.1:8443/aw/ws
+  trust-store: classpath:keystore/CaLib_Client.jks
+  trust-store-password: 123456
+  host-name: 127.0.0.1
+  template: 
+    userName: 123
+    userFullName: 456
+    mobilePhoneNumber: 13800000001
+    umpUserId: 1234
+    credentialTypeCode: 10
+    credentialNo: 110101190000000000
+    provinceNo: 37
+    cityNo: 3701
+    agentNo: 370101
+    isEnable: 10
+    isDeleted: 0

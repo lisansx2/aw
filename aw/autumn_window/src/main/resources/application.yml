@@ -1,0 +1,141 @@
+spring: 
+  profiles:
+    active: dev
+  datasource:
+    druid:
+      #配置初始化大小、最小、最大
+      initial-size: 5
+      min-idle: 5
+      max-active: 400
+      #配置获取连接等待超时的时间
+      max-wait: 60000
+      #配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
+      timeBetweenEvictionRunsMillis:  60000
+      #配置一个连接在池中最小生存的时间，单位是毫秒
+      minEvictableIdleTimeMillis: 300000
+      validationQuery:  SELECT 1 FROM DUAL
+      testWhileIdle:  true
+      testOnBorrow: false
+      testOnReturn: false
+      #打开PSCache，并且指定每个连接上PSCache的大小
+      poolPreparedStatements: true
+      maxPoolPreparedStatementPerConnectionSize:  20
+      #统计页面用户配置
+      stat-view-servlet:
+        login-username: admin
+        login-password: 123456
+     #统计配置，设置慢查询记录日志
+      filter:
+        stat:
+          slow-sql-millis: 10000
+          log-slow-sql: false
+        #slf4j:
+          #enabled: true
+          #statementLogEnabled: true
+          #statementExecutableSqlLogEnable:  true
+  jpa:
+     show-sql: false
+     properties:
+      hibernate:
+        dialect: org.hibernate.dialect.Oracle12cDialect
+        format_sql:  true
+        use_sql_comments: true
+        naming:
+          strategy: org.hibernate.cfg.ImprovedNamingStrategyorg.hibernate.cfg.ImprovedNamingStrategy
+  devtools:
+    restart:
+      trigger-file: trigger.txt
+server:
+  context-path: /aw
+  port: 8443
+  ssl:
+    key-store: classpath:keystore/CaLib.jks
+    key-store-password: 123456
+    key-alias: 127.0.0.1
+403url: /403
+logout-url: /login?logout
+session-expired-time: 30
+app:
+  app-name: Autumn Window
+  app-version: @project.version@
+quartz:
+  enabled: true
+#samplejob:
+  #frequency: 2000
+  #cronExp: 0 0 1 * * ?
+job:
+  report:
+    periodSales:
+      cronExp: 0 0 1 * * ?
+  #syndata:
+    #cronExp: 0 0 2 * * ?
+ws:
+  umpSourceName: ump
+  #left is ump code，right is aw code
+  credentialTypeCodeMap:
+    10: 10
+    20: 30
+    30: 20
+    40: 24
+    50: 21
+    60: 22
+    70: 11
+    80: 90
+    90: 90
+  awDefaultCredentialTypeCode: 90
+---
+spring:
+    profiles: dev
+    datasource:
+      url:  jdbc:oracle:thin:@172.26.0.86:1521:awdb
+      username: tiger
+      password: tiger
+sso:
+  webseal-token-name: LtpaToken
+  address: http://172.26.0.195:9080/csl-4a-service/services/soap/credential
+  username: test
+  password: Passw0rd
+  logout-url: http://172.26.0.195/pkmslogout
+  login-url: http://172.26.0.195
+---
+spring:
+    profiles: test
+    datasource:
+      url:  jdbc:oracle:thin:@172.26.0.88:1521:awdb
+      username: tiger
+      password: tiger
+sso:
+  webseal-token-name: LtpaToken
+  address: http://172.26.14.119:9080/csl-4a-service/services/soap/credential
+  username: test
+  password: Passw0rd
+  logout-url: https://172.26.1.112/pkmslogout
+  login-url: https://172.26.1.112
+---
+spring:
+    profiles: prod
+    datasource:
+      url:  jdbc:oracle:thin:@//3.22.10.81:1521/awdb
+      username: tiger
+      password: tiger
+sso:
+  webseal-token-name: LtpaToken
+  address: http://3.10.10.15:9080/csl-4a-service/services/soap/credential
+  username: interfaceBinder
+  password: CSLC@UMPPassw0rd
+  logout-url: https://3.13.1.50/pkmslogout
+  login-url: https://3.13.1.40
+---
+spring:
+    profiles: smoke
+    datasource:
+      url:  jdbc:oracle:thin:@172.26.0.86:1521:awdb
+      username: tiger
+      password: tiger
+sso:
+  webseal-token-name: LtpaToken
+  address: http://172.26.0.195:9080/csl-4a-service/services/soap/credential
+  username: test
+  password: Passw0rd
+  logout-url: http://172.26.0.195/pkmslogout
+  login-url: http://172.26.0.195
