@@ -1,0 +1,33 @@
+sys.org ---->机构管理--->点击查询按钮；--->机构管理--->新增机构--->点击选择按钮；
+sys.province--->机构管理--->点击新增机构按钮；---》机构管理---》点击修改
+
+
+
+机构管理--->点击查询按钮 ---》sys_org;
+机构管理---》新增机构---》点击选择按钮-----》sys_org;
+机构管理---》点击新增机构按钮-----》sys_province;
+机构管理---》修改机构----》sys_org,sys_org_type,sys_province;
+机构管理---》分配角色----》sys_org_customer,sys_org_agent,sys_agent,sys_org_agent,sys_province,sys_org;
+
+用户管理---》sys_province,sys_credential_type,sys_user_state,sys_user,sys_org,sys_authority,sys_role,sys_city,
+
+用户管理---》分配角色---》sys_province,sys_user_state,sys_user,sys_role,sys_credential_type,sys_authority
+用户管理---》修改用户----》sys_province,sys_credential_type,sys_user_state,sys_user,sys_city
+用户管理---》选择机构----》sys_province,sys_credential_type,sys_user_state,sys_user, sys_user_org,sys_org,
+
+额度管理---》代理额度查询----》bc_account_balance,b_account_info,b_agent;
+额度管理---》门店额度查询----》sys_agent,sys_org_agent,sys_org,bc_accunt_balance,b_account_info,b_shop,b_agent
+
+报表管理---》时段销量报表（自然日）--》sys_game,sys_province,sys_game_system,sys_period_sales_report_temp,rc_account_base,c_game_def,b_terminal,b_shop,b_agent,sys_agent,sys_org_agent,sys_org
+
+报表管理---》时段销量报表（业务日）---》sys_game,sys_province,sys_game_system,sys_period_sales_report_temp,rc_account_base,c_game_def,b_terminal,b_shop,b_agent,sys_agent,sys_org_agent,sys_org
+
+报表管理---》代理历史额度记录报表----》sys_agent,rc_balance_daily_finance,b_account_info,b_agent,tc_bank_deal_agent
+
+报表管理---》门店历史额度记录报表（自然日）----》sys_agent,sys_org_agent,sys_org,rc_balance_daily_natural,b_account_info,b_shop,b_agent,
+
+报表管理---》门店历史额度记录报表（业务日）----》sys_agent,sys_org_agent,sys_org,rc_balance_daily_finance,,b_account_info,b_shop,b_agent,
+
+报表管理---》门店即开兑奖激活报表-----》sys_game,sys_province,sys_game_system,instant_rp_biz_d_s_2p,instant_md_channel_customer,sys_org,sys_org_customer,sys_customer,
+
+报表管理---》门店即开促销兑奖报表-----》sys_customer,sys_org,sys_org_customer,sys_customer,instant_md_channel_customer,instant_b_shop,instant_sp_promotion_award
